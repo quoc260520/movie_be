@@ -6,6 +6,7 @@ return [
         'default' => [
             'api' => [
                 'title' => 'Docs movie API',
+                'path' => 'api/*',
             ],
 
             'routes' => [

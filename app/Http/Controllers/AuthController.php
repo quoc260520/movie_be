@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use Laravel\Passport\Client as OauthClient;
 use Throwable;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
@@ -39,16 +40,18 @@ class AuthController extends Controller
                     'message' => $validator->errors(),
                 ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
             }
+            DB::beginTransaction();
             $user = User::create([
                 'name' => Str::random(6),
                 'email' => $request->email,
                 'password' => Hash::make($request->password)
             ]);
-
             $user->assignRole(config('permission.roles.user'));
-
+            DB::commit();
             return $this->getTokenAndRefreshToken($request);
+
         } catch (Throwable $e) {
+            DB::rollBack();
             Log::channel('daily')->error($e->getMessage());
             return response()->json([
                 'message' => 'Đã có lỗi xảy ra',

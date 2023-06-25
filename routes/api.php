@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,8 +26,19 @@ Route::group([
 Route::group([
     'middleware' => 'auth:api'
 ], function () {
+    /**
+     * Room routes
+     */
     Route::get('room', [RoomController::class, 'index'])->name('room.index');
-    Route::post('room', [RoomController::class, 'create'])->can('role:admin')->name('room.create');
-    Route::put('room/{id}', [RoomController::class, 'update'])->can('role:admin')->name('room.update');
-    Route::delete('room/{id}', [RoomController::class, 'delete'])->can('role:admin')->name('room.delete');
+    Route::middleware('role:admin|user')->post('room', [RoomController::class, 'create'])->name('room.create');
+    Route::middleware('role:admin|user')->put('room/{id}', [RoomController::class, 'update'])->name('room.update');
+    Route::middleware('role:admin|user')->delete('room/{id}', [RoomController::class, 'delete'])->name('room.delete');
+
+    /**
+     * Categories routes
+     */
+    Route::get('category', [CategoryController::class, 'index'])->name('category.index');
+    Route::middleware('role:admin|user')->post('category', [CategoryController::class, 'create'])->name('category.create');
+    Route::middleware('role:admin|user')->put('category/{id}', [CategoryController::class, 'update'])->name('category.update');
+    Route::middleware('role:admin|user')->delete('category/{id}', [CategoryController::class, 'delete'])->name('category.delete');
 });

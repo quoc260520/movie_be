@@ -22,6 +22,16 @@
                     }
                 }
             }
+        },
+        "/api/auth/login": {
+            "post": {
+                "description": "Login",
+                "responses": {
+                    "default": {
+                        "description": "Login page"
+                    }
+                }
+            }
         }
     }
 }
