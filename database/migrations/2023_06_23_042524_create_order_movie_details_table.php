@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('book_movie_details', function (Blueprint $table) {
+        Schema::create('order_movie_details', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('book_movie_id');
+            $table->unsignedBigInteger('order_movie_id');
             $table->unsignedInteger('price');
             $table->unsignedInteger('no_chair');
-            $table->foreign('book_movie_id')->references('id')->on('book_movies');
+            $table->foreign('order_movie_id')->references('id')->on('order_movies');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -31,9 +31,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('book_movie_details', function (Blueprint $table) {
-            $table->dropForeign(['book_movie_id']);
+        Schema::table('order_movie_details', function (Blueprint $table) {
+            $table->dropForeign(['order_movie_id']);
         });
-        Schema::dropIfExists('book_movie_details');
+        Schema::dropIfExists('order_movie_details');
     }
 };

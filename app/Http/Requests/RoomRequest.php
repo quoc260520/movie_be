@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RoomRequest extends BaseApiRequest
 {
@@ -23,9 +24,13 @@ class RoomRequest extends BaseApiRequest
      */
     public function rules()
     {
+        $id = $this->route('id');
         return [
-            'name' => 'required|string',
-            'chair_number' => 'required|integer|max:100',
+            'name' => [
+                'required',
+                 Rule::unique('rooms')->ignore($id),
+            ],
+            'chair_number' => 'required|integer|max:100|min:0',
         ];
     }
     public function attributes() {

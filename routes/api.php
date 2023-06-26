@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\RoomController;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,12 @@ Route::group([
     Route::middleware('role:admin|user')->post('category', [CategoryController::class, 'create'])->name('category.create');
     Route::middleware('role:admin|user')->put('category/{id}', [CategoryController::class, 'update'])->name('category.update');
     Route::middleware('role:admin|user')->delete('category/{id}', [CategoryController::class, 'delete'])->name('category.delete');
+
+    /**
+     * Coupons routes
+     */
+    Route::get('coupon', [CouponController::class, 'index'])->name('coupon.index');
+    Route::middleware('role:admin|user')->post('coupon', [CouponController::class, 'create'])->name('coupon.create');
+    Route::middleware('role:admin|user')->put('coupon/{id}', [CouponController::class, 'update'])->name('coupon.update');
+    Route::middleware('role:admin|user')->delete('coupon/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
 });

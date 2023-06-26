@@ -27,8 +27,6 @@ services:
     container_name: laravel
     networks:
       - movie_be_laravel
-    ports:
-      - "9000:9000"
     volumes:
       - .:/var/www/html:delegated
     depends_on:

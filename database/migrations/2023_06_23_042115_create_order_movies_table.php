@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('book_movies', function (Blueprint $table) {
+        Schema::create('order_movies', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('coupon_id');
@@ -34,11 +34,11 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('book_movies', function (Blueprint $table) {
+        Schema::table('order_movies', function (Blueprint $table) {
             $table->dropForeign(['user_id']);
             $table->dropForeign(['coupon_id']);
             $table->dropForeign(['time_id']);
         });
-        Schema::dropIfExists('book_movies');
+        Schema::dropIfExists('order_movies');
     }
 };

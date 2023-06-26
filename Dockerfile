@@ -75,7 +75,6 @@ RUN apt-get -y install nodejs
 # create composer folder for user www-data
 RUN mkdir -p /var/www/.composer && chown -R www-data:www-data /var/www/.composer
 
-
 EXPOSE 9000
 
 USER www-data
