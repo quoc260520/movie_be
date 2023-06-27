@@ -17,9 +17,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('movie_id');
             $table->unsignedBigInteger('room_id');
-            $table->unsignedBigInteger('time_start');
-            $table->unsignedBigInteger('time_end');
-            $table->unsignedBigInteger('status');
+            $table->timestamp('time_start');
+            $table->timestamp('time_end');
+            $table->tinyInteger('status');
             $table->unsignedBigInteger('price');
             $table->timestamps();
             $table->softDeletes();

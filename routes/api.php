@@ -3,7 +3,10 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
+use App\Http\Controllers\MovieController;
 use App\Http\Controllers\RoomController;
+use App\Http\Controllers\SlideController;
+use App\Http\Controllers\TimeMovieController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,4 +53,29 @@ Route::group([
     Route::middleware('role:admin|user')->post('coupon', [CouponController::class, 'create'])->name('coupon.create');
     Route::middleware('role:admin|user')->put('coupon/{id}', [CouponController::class, 'update'])->name('coupon.update');
     Route::middleware('role:admin|user')->delete('coupon/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
+
+    /**
+     * Slides routes
+     */
+    Route::get('slide', [SlideController::class, 'index'])->name('slide.index');
+    Route::middleware('role:admin|user')->post('slide', [SlideController::class, 'create'])->name('slide.create');
+    Route::middleware('role:admin|user')->put('slide/{id}', [SlideController::class, 'update'])->name('slide.update');
+    Route::middleware('role:admin|user')->delete('slide/{id}', [SlideController::class, 'delete'])->name('slide.delete');
+
+    /**
+     * Movies routes
+     */
+    Route::get('movie', [MovieController::class, 'index'])->name('movie.index');
+    Route::middleware('role:admin|user')->post('movie', [MovieController::class, 'create'])->name('movie.create');
+    Route::middleware('role:admin|user')->put('movie/{id}', [MovieController::class, 'update'])->name('movie.update');
+    Route::middleware('role:admin|user')->delete('movie/{id}', [MovieController::class, 'delete'])->name('movie.delete');
+
+    /**
+     * Time movies routes
+     */
+    Route::get('time-movie/day', [TimeMovieController::class, 'getTimeByDay'])->name('time-movie.day');
+    Route::get('time-movie', [TimeMovieController::class, 'index'])->name('time-movie.index');
+    Route::middleware('role:admin|user')->post('time-movie', [TimeMovieController::class, 'create'])->name('time-movie.create');
+    Route::middleware('role:admin|user')->put('time-movie/{id}', [TimeMovieController::class, 'update'])->name('time-movie.update');
+    Route::middleware('role:admin|user')->delete('time-movie/{id}', [TimeMovieController::class, 'delete'])->name('time-movie.delete');
 });

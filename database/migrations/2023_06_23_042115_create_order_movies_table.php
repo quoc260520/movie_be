@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('coupon_id');
             $table->unsignedBigInteger('time_id');
-            $table->unsignedBigInteger('status');
+            $table->tinyInteger('status');
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('coupon_id')->references('id')->on('coupons');
             $table->foreign('time_id')->references('id')->on('time_movies');
