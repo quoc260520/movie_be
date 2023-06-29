@@ -28,7 +28,7 @@ class CouponRequest extends BaseApiRequest
         return [
             'code' => [
                 'required', 'string','max:8',
-                Rule::unique('coupons')->ignore($id),
+                Rule::unique('coupons')->ignore($id)->where('deleted_at', null),
             ],
             'discount' => 'required|integer|min:0|max:100',
             'max_discount' => 'integer|min:0',

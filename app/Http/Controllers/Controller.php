@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
 
 /**
@@ -37,4 +38,28 @@ use Illuminate\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function responseData($data) {
+        $code = JsonResponse::HTTP_OK;
+        if(isset($data['code'])) {
+            $code = $data['code'];
+            unset($data['code']);
+        }
+        return response()->json($data,$code);
+    }
+
+    public function successResponse($data = ['message' => 'OK'])
+    {
+        return response()->json($data);
+    }
+
+    public function errorResponse($errorData = null)
+    {
+        $errorData = $errorData ? $errorData : ['errors' => 'An error has occurred'];
+        return response()->json($errorData, $errorData['code'] ? $errorData['code'] : JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    public function resultResponse($data) {
+        return !$data['errors'] ? $this->successResponse() : $this->errorResponse();
+    }
 }

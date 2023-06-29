@@ -24,7 +24,7 @@ class TimeMovieController extends Controller
 
     public function index(Request $request)
     {
-        return $this->timeMovieRepository->getTimeMovieByMonth($request);
+        return $this->responseData($this->timeMovieRepository->getTimeMovieByMonth($request));
     }
     public function create(TimeMovieRequest $request)
     {
@@ -34,23 +34,25 @@ class TimeMovieController extends Controller
         $diffInMinutes = $timeStart->diffInMinutes($timeEnd);
         $checkTime = $diffInMinutes > $movie->time;
         if(!$checkTime) {
-            return response()->json([
+            return $this->errorResponse([
                 'message' => 'Validation error',
                 'errors' => [
                     'time_end' => 'Movie show time is not enough',
                 ],
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+                'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+            ]);
         }
         $timeRoom = $this->timeMovieRepository->getTimeByRoom($request->get('room_id'));
         if(count($timeRoom)) {
             $flagCheckTime = $this->timeMovieRepository->checkTimeBeforeInsert($timeRoom, $request->all(), $movie);
             if(!$flagCheckTime) {
-                return response()->json([
+                return $this->errorResponse([
                     'message' => 'The same time must not overlap',
-                ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+                    'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+                ]);
             } 
         }
-        return $this->timeMovieRepository->create($request->all());
+        return $this->responseData($this->timeMovieRepository->create($request->all()));
     }
 
     public function update($id, TimeMovieUpdateRequest $request)
@@ -61,31 +63,33 @@ class TimeMovieController extends Controller
         $diffInMinutes = $timeStart->diffInMinutes($timeEnd);
         $checkTime = $diffInMinutes > $movie->time;
         if (!$checkTime) {
-            return response()->json([
+            return $this->errorResponse([
                 'message' => 'Validation error',
                 'errors' => [
                     'time_end' => 'Movie show time is not enough',
                 ],
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+                'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+            ]);
         }
         $timeRoom = $this->timeMovieRepository->getTimeByRoom($request->get('room_id'), $id);
         if (count($timeRoom)) {
             $flagCheckTime = $this->timeMovieRepository->checkTimeBeforeInsert($timeRoom, $request->all(), $movie);
             if (!$flagCheckTime) {
-                return response()->json([
+                return $this->errorResponse([
                     'message' => 'The same time must not overlap',
-                ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
+                    'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY
+                ]);
             }
         }
-        return $this->timeMovieRepository->update($id, $request->only(['name']));
+        return $this->responseData($this->timeMovieRepository->update($id, $request->only(['name'])));
     }
 
     public function delete($id)
     {
-        return $this->timeMovieRepository->delete($id);
+        return $this->resultResponse($this->timeMovieRepository->delete($id));
     }
 
     public function getTimeByDay(Request $request) {
-        return $this->timeMovieRepository->getTimeByDay($request);
+        return $this->responseData($this->timeMovieRepository->getTimeByDay($request));
     }
 }

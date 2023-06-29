@@ -24,13 +24,13 @@ class CouponController extends Controller
 
     public function index(Request $request)
     {
-        return $this->couponRepository->getAllCoupon();
+        return $this->responseData($this->couponRepository->getAllCoupon());
     }
     public function create(CouponRequest $request)
     {
         $data = $request->only(['discount', 'max_discount', 'salary', 'time_start', 'time_end']);
         $data['code'] = Str::upper($request->code);
-        return $this->couponRepository->create($data);
+        return $this->successResponse($this->couponRepository->create($data));
     }
 
     public function update($id, CouponRequest $request)
@@ -43,18 +43,19 @@ class CouponController extends Controller
             $coupon = $this->couponRepository->update($id, $data);
             if( $coupon->wasChanged('discount') || $coupon->wasChanged('discount')) {
                 DB::rollBack();
-                return response()->json([
-                    'message' => 'Used discount codes cannot be updated',
-                ], JsonResponse::HTTP_BAD_REQUEST);
+                return $this->errorResponse([
+                    'message' => 'Used discount codes cannot be updated', 
+                    'code' => JsonResponse::HTTP_BAD_REQUEST]
+                );
             }
             DB::commit();
             return $coupon;
         }
-        return $this->couponRepository->update($id, $data);
+        return $this->successResponse($this->couponRepository->update($id, $data));
     }
 
     public function delete($id)
     {
-        return $this->couponRepository->delete($id);
+        return $this->resultResponse($this->couponRepository->delete($id));
     }
 }

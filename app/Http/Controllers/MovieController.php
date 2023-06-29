@@ -21,7 +21,7 @@ class MovieController extends Controller
 
     public function index(Request $request)
     {
-        return $this->movieRepository->getAll();
+        return $this->responseData($this->movieRepository->getAll());
     }
     public function create(MovieRequest $request)
     {
@@ -33,7 +33,7 @@ class MovieController extends Controller
             'time',
         ]);
         $data['images'] = json_encode([$this->fileSystemRepository->uploadFile('image')]);
-        return $this->movieRepository->create($data);
+        return $this->responseData($this->movieRepository->create($data));
     }
 
     public function update($id, MovieRequest $request)
@@ -46,11 +46,11 @@ class MovieController extends Controller
             'time',
         ]);
         $data['images'] = json_encode([$this->fileSystemRepository->uploadFile('image')]);
-        return $this->movieRepository->update($id, $data);
+        return $this->responseData($this->movieRepository->update($id, $data));
     }
 
     public function delete($id)
     {
-        return $this->movieRepository->delete($id);
+        return $this->resultResponse($this->movieRepository->delete($id));
     }
 }

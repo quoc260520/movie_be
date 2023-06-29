@@ -16,7 +16,7 @@ class CategoryController extends Controller
     }
     public function index(Request $request)
     {
-        return $this->categoryRepository->getAllCategory();
+        return $this->responseData($this->categoryRepository->getAllCategory());
     }
     public function create(Request $request)
     {
@@ -33,7 +33,7 @@ class CategoryController extends Controller
                 'message' => $validator->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $this->categoryRepository->create($nameCategory);
+        return $this->responseData($this->categoryRepository->create($nameCategory));
     }
 
     public function update(Request $request, $id)
@@ -50,11 +50,11 @@ class CategoryController extends Controller
                 'message' => $validator->errors(),
             ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY);
         }
-        return $this->categoryRepository->update($id,$nameCategory);
+        return $this->responseData($this->categoryRepository->update($id,$nameCategory));
     }
 
     public function delete($id)
     {
-        return $this->categoryRepository->delete($id);
+        return $this->resultResponse($this->categoryRepository->delete($id));
     }
 }

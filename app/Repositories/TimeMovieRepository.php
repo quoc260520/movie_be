@@ -20,7 +20,7 @@ class TimeMovieRepository
 
     public function getTimeMovieByMonth($request)
     {
-        $date = $request->get('date') ? $request->get('date') : Carbon::now();
+        $date = $request->get('date') ? Carbon::parse($request->get('date')) : Carbon::now();
         $roomId = $request->get('room_id');
         return $this->model
             ->when($roomId, function ($q) use ($roomId) {
@@ -28,6 +28,7 @@ class TimeMovieRepository
             })
             ->whereYear('time_start',$date)
             ->whereMonth('time_start',$date)
+            ->with('movie:id,name,time')
             ->get();
     }
 
@@ -94,6 +95,7 @@ class TimeMovieRepository
             ->when($date, function ($q) use ($date) {
                 return  $q->whereDate('time_start', $date);
             })
+            ->with('movie:id,name,time')
             ->get();
     }
 }

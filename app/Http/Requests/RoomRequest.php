@@ -28,7 +28,7 @@ class RoomRequest extends BaseApiRequest
         return [
             'name' => [
                 'required',
-                 Rule::unique('rooms')->ignore($id),
+                 Rule::unique('rooms')->ignore($id)->where('deleted_at', null),
             ],
             'chair_number' => 'required|integer|max:100|min:0',
         ];

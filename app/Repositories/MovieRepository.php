@@ -20,7 +20,7 @@ class MovieRepository
 
     public function getAll()
     {
-        return $this->model->paginate(env('PAGE', 20));
+        return $this->model->with('category:id,name')->paginate(env('PAGE', 20));
     }
 
     public function create(array $data)

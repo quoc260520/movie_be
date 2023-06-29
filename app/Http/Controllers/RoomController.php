@@ -20,20 +20,20 @@ class RoomController extends Controller
 
     public function index(Request $request)
     {
-        return $this->roomRepository->getAllRoom();
+        return $this->responseData($this->roomRepository->getAllRoom());
     }
     public function create(RoomRequest $request)
     {
-        return $this->roomRepository->create($request->only(['name', 'chair_number']));
+        return $this->responseData($this->roomRepository->create($request->only(['name', 'chair_number'])));
     }
 
     public function update($id, RoomRequest $request)
     {
-        return $this->roomRepository->update($id,$request->only(['name', 'chair_number']));
+        return $this->responseData($this->roomRepository->update($id,$request->only(['name', 'chair_number'])));
     }
 
     public function delete($id)
     {
-        return $this->roomRepository->delete($id);
+        return $this->resultResponse($this->roomRepository->delete($id));
     }
 }

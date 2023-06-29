@@ -31,4 +31,8 @@ class Movie extends Model
     {
         return $this->hasMany('App\Models\TimeMovie', 'movie_id');
     }
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Category');
+    }
 }

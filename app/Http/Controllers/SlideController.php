@@ -18,20 +18,20 @@ class SlideController extends Controller
 
     public function index(Request $request)
     {
-        return $this->slideRepository->getAllSlide();
+        return $this->responseData($this->slideRepository->getAllSlide());
     }
     public function create(SlideRequest $request)
     {
-        return $this->slideRepository->create($request->only(['name']));
+        return $this->responseData($this->slideRepository->create($request->only(['name'])));
     }
 
     public function update($id, SlideRequest $request)
     {
-        return $this->slideRepository->update($id, $request->only(['name']));
+        return $this->responseData($this->slideRepository->update($id, $request->only(['name'])));
     }
 
     public function delete($id)
     {
-        return $this->slideRepository->delete($id);
+        return $this->resultResponse($this->slideRepository->delete($id));
     }
 }
