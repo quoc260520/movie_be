@@ -11,7 +11,7 @@ class TimeMovie extends Model
     use HasFactory, SoftDeletes;
     const STATUS_CLOSE = 0;
     const STATUS_OPEN = 1;
-    protected $fields = [
+    protected $fillable = [
         'movie_id',
         'room_id',
         'time_start',
@@ -24,6 +24,12 @@ class TimeMovie extends Model
     {
         return $this->belongsTo('App\Models\Movie');
     }
-
-
+    public function room()
+    {
+        return $this->belongsTo('App\Models\Room');
+    }
+    public function orders() 
+    {
+        return $this->hasMany('App\Models\Order', 'time_id');
+    }
 }

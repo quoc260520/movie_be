@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\Coupon;
+use Carbon\Carbon;
 
 class CouponRepository
 {
@@ -39,4 +40,11 @@ class CouponRepository
         $coupon = $this->model->findOrFail($id);
         $coupon->delete();
     }
+
+    public function checkCoupon($id) {
+        $now = Carbon::now();
+        return $this->model->where('id', $id)
+            ->where('time_start', '<=', $now)
+            ->where('time_end', '>', $now)->count();
+    }      
 }

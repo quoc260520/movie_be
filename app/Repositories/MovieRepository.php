@@ -2,8 +2,8 @@
 
 namespace App\Repositories;
 
-use App\Models\Category;
 use App\Models\Movie;
+use App\Models\TimeMovie;
 
 class MovieRepository
 {
@@ -18,9 +18,15 @@ class MovieRepository
         return $this->model->find($id);
     }
 
-    public function getAll()
+    public function getAll($request)
     {
-        return $this->model->with('category:id,name')->paginate(env('PAGE', 20));
+        $nameMovie = $request->get('nameMovie');
+        $category = $this->model->with('category:id,name')
+        ->when($nameMovie, function ($q) use ($nameMovie) {
+            return $q->where('name', 'LIKE', ["%$nameMovie%"]);
+        })
+        ->paginate(env('PAGE', 20));
+        return $category;
     }
 
     public function create(array $data)
@@ -39,5 +45,14 @@ class MovieRepository
     {
         $movie = $this->model->findOrFail($id);
         $movie->delete();
+    }
+
+    public function getMovieWithTime($id) {
+        $movie = $this->model->where('id', $id)
+        ->with('timeMovies', function($q) {
+            $q->where('status', TimeMovie::STATUS_OPEN);
+        })
+        ->get();
+        return  $movie;
     }
 }

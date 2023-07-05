@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SlideRequest;
+use App\Repositories\FileSystem\FileSystemRepository;
 use App\Repositories\SlideRepository;
 use Illuminate\Http\Request;
 
@@ -10,14 +11,18 @@ class SlideController extends Controller
 {
     use TraitsController;
     protected $slideRepository;
+    protected $fileSystemRepository;
 
-    public function __construct(SlideRepository $slideRepository)
+
+    public function __construct(SlideRepository $slideRepository, FileSystemRepository $fileSystemRepository)
     {
         $this->slideRepository = $slideRepository;
+        $this->fileSystemRepository = $fileSystemRepository;
     }
 
     public function index(Request $request)
     {
+        $this->fileSystemRepository->uploadFile('123213');
         return $this->responseData($this->slideRepository->getAllSlide());
     }
     public function create(SlideRequest $request)

@@ -21,7 +21,11 @@ class MovieController extends Controller
 
     public function index(Request $request)
     {
-        return $this->responseData($this->movieRepository->getAll());
+        return $this->responseData($this->movieRepository->getAll($request));
+    }
+
+    public function getMovieById($id) {
+        return $this->responseData($this->movieRepository->getById($id));
     }
     public function create(MovieRequest $request)
     {
@@ -52,5 +56,9 @@ class MovieController extends Controller
     public function delete($id)
     {
         return $this->resultResponse($this->movieRepository->delete($id));
+    }
+
+    public function getMovieWithTime($id) {
+        return $this->responseData($this->movieRepository->getMovieWithTime($id));
     }
 }

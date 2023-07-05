@@ -10,7 +10,7 @@ class Slide extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fields = [
+    protected $fillable = [
         'link',
         'image'
     ];

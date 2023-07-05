@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\TimeMovie;
 use Carbon\Carbon;
+use SebastianBergmann\Type\FalseType;
 
 class TimeMovieRepository
 {
@@ -13,9 +14,9 @@ class TimeMovieRepository
     {
         $this->model = $model;
     }
-    public function getById($id)
+    public function getById($id, $relation = [])
     {
-        return $this->model->find($id);
+        return $this->model->with($relation)->find($id);
     }
 
     public function getTimeMovieByMonth($request)

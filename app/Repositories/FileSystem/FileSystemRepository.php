@@ -2,10 +2,13 @@
 
 namespace App\Repositories\FileSystem;
 
+use Illuminate\Support\Facades\Storage;
 
 class FileSystemRepository
 {
     public function uploadFile($files) {
-        return 'https://www.cgv.vn/media/banner/cache/1/b58515f018eb873dafa430b6f9ae0c1e/9/8/980x448_12_-min.png';
+        // $googleDisk = Storage::disk('google');
+        // dd($googleDisk->put('exam.txt','adada'));
+        return 'https://www.cgv.vn/media/catalog/product/cache/1/image/c5f0a1eff4c394a251036189ccddaacd/p/o/poster_official_preiview.jpg';
     }
 }

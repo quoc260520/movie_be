@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\MovieController;
+use App\Http\Controllers\OrderMovieController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlideController;
 use App\Http\Controllers\TimeMovieController;
@@ -25,6 +26,11 @@ Route::group([
 ], function () {
     Route::post('login', [AuthController::class, 'login'])->name('auth.login');
     Route::post('register', [AuthController::class, 'register'])->name('auth.register');
+    Route::group([
+        'middleware' => 'auth:api'
+    ], function () {
+        Route::get('me', [AuthController::class, 'me'])->name('auth.me');
+    });
 });
 
 Route::group([
@@ -65,11 +71,10 @@ Route::group([
     /**
      * Movies routes
      */
-    Route::get('movie', [MovieController::class, 'index'])->name('movie.index');
     Route::middleware('role:admin|user')->post('movie', [MovieController::class, 'create'])->name('movie.create');
     Route::middleware('role:admin|user')->put('movie/{id}', [MovieController::class, 'update'])->name('movie.update');
     Route::middleware('role:admin|user')->delete('movie/{id}', [MovieController::class, 'delete'])->name('movie.delete');
-
+    
     /**
      * Time movies routes
      */
@@ -78,4 +83,18 @@ Route::group([
     Route::middleware('role:admin|user')->post('time-movie', [TimeMovieController::class, 'create'])->name('time-movie.create');
     Route::middleware('role:admin|user')->put('time-movie/{id}', [TimeMovieController::class, 'update'])->name('time-movie.update');
     Route::middleware('role:admin|user')->delete('time-movie/{id}', [TimeMovieController::class, 'delete'])->name('time-movie.delete');
+    
+    /**
+     * Time movies routes
+     */
+    // Route::get('order-movie/day', [TimeMovieController::class, 'getTimeByDay'])->name('time-movie.day');
+    // Route::get('order-movie', [TimeMovieController::class, 'index'])->name('order-movie.index');
+    Route::middleware('role:admin|user')->get('order-movie/me', [OrderMovieController::class, 'getOrderByUser'])->name('order-movie.me');
+    Route::middleware('role:admin|user')->post('order-movie', [OrderMovieController::class, 'create'])->name('order-movie.create');
+    // Route::middleware('role:admin|user')->put('order-movie/{id}', [TimeMovieController::class, 'update'])->name('order-movie.update');
+    // Route::middleware('role:admin|user')->delete('order-movie/{id}', [TimeMovieController::class, 'delete'])->name('order-movie.delete');
 });
+
+Route::get('movie', [MovieController::class, 'index'])->name('movie.index');
+Route::get('movie/{id}', [MovieController::class, 'getMovieById'])->name('movie.id');
+Route::get('movie-time/{id}', [MovieController::class, 'getMovieWithTime'])->name('movie.time');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
+use App\Http\Resources\User as ResourcesUser;
 use App\Models\User;
 use GuzzleHttp\Client;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,14 @@ class AuthController extends Controller
             ], JsonResponse::HTTP_UNAUTHORIZED);
         }
         return $this->getTokenAndRefreshToken($request);
+    }
+
+    public function me() {
+        try {
+            return $this->responseData(ResourcesUser::make(Auth::user()));
+        } catch (\Exception $e) {
+            $this->errorResponse($e->getMessage());
+        }
     }
     public function register(AuthRequest $request)
     {
