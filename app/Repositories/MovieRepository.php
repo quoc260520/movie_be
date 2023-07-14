@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Movie;
 use App\Models\TimeMovie;
+use Illuminate\Support\Carbon;
 
 class MovieRepository
 {
@@ -15,7 +16,7 @@ class MovieRepository
     }
     public function getById($id)
     {
-        return $this->model->find($id);
+        return $this->model->with('category:id,name')->find($id);
     }
 
     public function getAll($request)
@@ -47,12 +48,31 @@ class MovieRepository
         $movie->delete();
     }
 
-    public function getMovieWithTime($id) {
+    public function getMovieWithTime($request, $id) {
+        $now = Carbon::now();
+        $date = $request->get('date');
         $movie = $this->model->where('id', $id)
-        ->with('timeMovies', function($q) {
-            $q->where('status', TimeMovie::STATUS_OPEN);
+        ->with('timeMovies', function($q) use ($now, $date) {
+            $q->where('status', TimeMovie::STATUS_OPEN)
+            ->whereDate('time_start', '>=', $now)
+            ->when($date, function ($q) use ($date) {
+                $q->whereDate('time_start', $date);
+            })
+            ->orderBy('time_start','asc')
+            ->with('room:id,name');
         })
         ->get();
-        return  $movie;
+        return  $this->formatData($movie);
+    }
+
+    public function formatData($data) {
+        $arrayData = [];
+        foreach($data[0]->timeMovies as $item) {
+            if(!array_key_exists($item->room->name, $arrayData)) {
+                $arrayData[$item->room->name] = [];
+            }
+            array_push($arrayData[$item->room->name], $item);
+        }
+        return $arrayData;
     }
 }

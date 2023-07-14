@@ -46,6 +46,7 @@ class TimeMovieRepository
     public function create(array $data)
     {
         $dataInsert = [];
+        $now = Carbon::now();
         foreach($data['room_id'] as $room_id) {
             array_push($dataInsert, [
                 'room_id' => $room_id,
@@ -54,6 +55,8 @@ class TimeMovieRepository
                 'time_end' => $data['time_end'],
                 'status' => array_key_exists('status', $data) ? $data['status'] : TimeMovie::STATUS_CLOSE,
                 'price' => $data['price'],
+                'created_at' => $now,
+                'updated_at' => $now,
             ]);
         }
         return $this->model->insert($dataInsert);

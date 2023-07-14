@@ -30,6 +30,7 @@ Route::group([
         'middleware' => 'auth:api'
     ], function () {
         Route::get('me', [AuthController::class, 'me'])->name('auth.me');
+        Route::get('logout', [AuthController::class, 'logout'])->name('auth.logout');
     });
 });
 
@@ -97,4 +98,4 @@ Route::group([
 
 Route::get('movie', [MovieController::class, 'index'])->name('movie.index');
 Route::get('movie/{id}', [MovieController::class, 'getMovieById'])->name('movie.id');
-Route::get('movie-time/{id}', [MovieController::class, 'getMovieWithTime'])->name('movie.time');
+Route::get('movie-time/{movieId}', [MovieController::class, 'getMovieWithTime'])->name('movie.time');

@@ -58,7 +58,7 @@ class MovieController extends Controller
         return $this->resultResponse($this->movieRepository->delete($id));
     }
 
-    public function getMovieWithTime($id) {
-        return $this->responseData($this->movieRepository->getMovieWithTime($id));
+    public function getMovieWithTime(Request $request, $id) {
+        return $this->responseData($this->movieRepository->getMovieWithTime($request, $id));
     }
 }

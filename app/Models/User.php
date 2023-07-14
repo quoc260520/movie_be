@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes;
-
+    const STATUS_ACTIVE = 0;
+    const STATUS_DE_ACTIVE = 1;
     /**
      * The attributes that are mass assignable.
      *
