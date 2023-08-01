@@ -33,7 +33,7 @@ class TimeMovieController extends Controller
         $timeEnd = Carbon::parse($request->get('time_end'));
         $diffInMinutes = $timeStart->diffInMinutes($timeEnd);
         $checkTime = $diffInMinutes > $movie->time;
-        if(!$checkTime) {
+        if (!$checkTime) {
             return $this->errorResponse([
                 'message' => 'Validation error',
                 'errors' => [
@@ -43,14 +43,14 @@ class TimeMovieController extends Controller
             ]);
         }
         $timeRoom = $this->timeMovieRepository->getTimeByRoom($request->get('room_id'));
-        if(count($timeRoom)) {
+        if (count($timeRoom)) {
             $flagCheckTime = $this->timeMovieRepository->checkTimeBeforeInsert($timeRoom, $request->all(), $movie);
-            if(!$flagCheckTime) {
+            if (!$flagCheckTime) {
                 return $this->errorResponse([
                     'message' => 'The same time must not overlap',
                     'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY
                 ]);
-            } 
+            }
         }
         return $this->responseData($this->timeMovieRepository->create($request->all()));
     }
@@ -89,7 +89,20 @@ class TimeMovieController extends Controller
         return $this->resultResponse($this->timeMovieRepository->delete($id));
     }
 
-    public function getTimeByDay(Request $request) {
+    public function getTimeByDay(Request $request)
+    {
         return $this->responseData($this->timeMovieRepository->getTimeByDay($request));
+    }
+    public function getAllOrderByTimeId(Request $request, $id)
+    {
+        $dataOrders = $this->timeMovieRepository->getAllOrderByTimeId($id);
+        $arrayChairOrder = [];
+        foreach ($dataOrders->orders as $order) {
+            foreach ($order->orderDetails as $detail) {
+                array_push($arrayChairOrder, $detail->no_chair);
+            }
+        }
+        $dataOrders['array_chair_order'] = $arrayChairOrder;
+        return $this->responseData($dataOrders);
     }
 }

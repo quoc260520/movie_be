@@ -39,13 +39,14 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function responseData($data) {
+    public function responseData($data)
+    {
         $code = JsonResponse::HTTP_OK;
-        if(isset($data['code'])) {
+        if (isset($data['code']) && is_numeric($data['code'])) {
             $code = $data['code'];
             unset($data['code']);
         }
-        return response()->json($data,$code);
+        return response()->json($data, $code);
     }
 
     public function successResponse($data = ['message' => 'OK'])
@@ -59,7 +60,8 @@ class Controller extends BaseController
         return response()->json($errorData, $errorData['code'] ? $errorData['code'] : JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
     }
 
-    public function resultResponse($data) {
+    public function resultResponse($data)
+    {
         return !$data['errors'] ? $this->successResponse() : $this->errorResponse();
     }
 }

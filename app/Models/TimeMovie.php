@@ -28,8 +28,8 @@ class TimeMovie extends Model
     {
         return $this->belongsTo('App\Models\Room');
     }
-    public function orders() 
+    public function orders()
     {
-        return $this->hasMany('App\Models\Order', 'time_id');
+        return $this->hasMany('App\Models\OrderMovie', 'time_id');
     }
 }

@@ -57,6 +57,7 @@ Route::group([
      * Coupons routes
      */
     Route::get('coupon', [CouponController::class, 'index'])->name('coupon.index');
+    Route::post('apply-coupon', [CouponController::class, 'apply'])->name('coupon.apply');
     Route::middleware('role:admin|user')->post('coupon', [CouponController::class, 'create'])->name('coupon.create');
     Route::middleware('role:admin|user')->put('coupon/{id}', [CouponController::class, 'update'])->name('coupon.update');
     Route::middleware('role:admin|user')->delete('coupon/{id}', [CouponController::class, 'delete'])->name('coupon.delete');
@@ -81,6 +82,7 @@ Route::group([
      */
     Route::get('time-movie/day', [TimeMovieController::class, 'getTimeByDay'])->name('time-movie.day');
     Route::get('time-movie', [TimeMovieController::class, 'index'])->name('time-movie.index');
+    Route::middleware('role:admin|user')->get('time-movie/{id}', [TimeMovieController::class, 'getAllOrderByTimeId'])->name('time-movie.all-order');
     Route::middleware('role:admin|user')->post('time-movie', [TimeMovieController::class, 'create'])->name('time-movie.create');
     Route::middleware('role:admin|user')->put('time-movie/{id}', [TimeMovieController::class, 'update'])->name('time-movie.update');
     Route::middleware('role:admin|user')->delete('time-movie/{id}', [TimeMovieController::class, 'delete'])->name('time-movie.delete');

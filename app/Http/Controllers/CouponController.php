@@ -37,15 +37,17 @@ class CouponController extends Controller
     {
         $data = $request->only(['discount', 'max_discount', 'salary', 'time_start', 'time_end']);
         $data['code'] = Str::upper($request->code);
-        $check = $this->orderMovieRepository->checkCouponById($id);
+        $check = $this->orderMovieRepository->checkCouponIsUsed($id);
         if ($check) {
             DB::beginTransaction();
             $coupon = $this->couponRepository->update($id, $data);
-            if( $coupon->wasChanged('discount') || $coupon->wasChanged('discount')) {
+            if ($coupon->wasChanged('discount') || $coupon->wasChanged('discount')) {
                 DB::rollBack();
-                return $this->errorResponse([
-                    'message' => 'Used discount codes cannot be updated', 
-                    'code' => JsonResponse::HTTP_BAD_REQUEST]
+                return $this->errorResponse(
+                    [
+                        'message' => 'Used discount codes cannot be updated',
+                        'code' => JsonResponse::HTTP_BAD_REQUEST
+                    ]
                 );
             }
             DB::commit();
@@ -57,5 +59,17 @@ class CouponController extends Controller
     public function delete($id)
     {
         return $this->resultResponse($this->couponRepository->delete($id));
+    }
+
+    public function apply(Request $request)
+    {
+        $coupon = $this->couponRepository->apply($request);
+        if ($coupon) {
+            $check = $this->orderMovieRepository->checkCouponIsUsed($coupon->id);
+            if ($check) {
+                $coupon = [];
+            }
+        }
+        return $this->responseData($coupon);
     }
 }

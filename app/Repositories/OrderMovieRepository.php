@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\OrderMovie;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -18,15 +19,23 @@ class OrderMovieRepository
         $this->couponRepository = $couponRepository;
         $this->timeMovieRepository = $timeMovieRepository;
     }
-    public function checkCouponById(int $id) {
+    public function checkCouponById(int $id)
+    {
     }
-    public function create($request) {
+    public function create($request)
+    {
         try {
+            $userId = Auth::user()->id;
             DB::beginTransaction();
             $timeMovie = $this->timeMovieRepository->getById($request->get('time_id'));
-            $order = $this->model->create($request->all());
+            $order = $this->model->create([
+                'user_id' => $userId,
+                'coupon_id' => $request->get('coupon_id'),
+                'time_id' => $request->get('time_id'),
+                'status' => OrderMovie::STATUS_UNUSED
+            ]);
             $data = array();
-            foreach($request->get('no_chair') as $seats) {
+            foreach ($request->get('no_chair') as $seats) {
                 $data[] = [
                     'price' => $timeMovie->price,
                     'no_chair' => $seats
@@ -41,33 +50,36 @@ class OrderMovieRepository
         }
     }
 
-    public function getOrderByUser() {
+    public function getOrderByUser()
+    {
         $user = auth()->id();
         return $this->model->where('user_id', $user)
-        ->with('timeMovie', 'orderDetails')
-        ->with(['coupon' => function ($q) {
-            $q->withTrashed();
-        }])
-        ->get();
+            ->with('timeMovie.movie:id,name,author', 'orderDetails')
+            ->with(['coupon' => function ($q) {
+                $q->withTrashed();
+            }])
+            ->get();
     }
-    public function checkCouponIsUsed($id) {
+    public function checkCouponIsUsed($id)
+    {
         $user = auth()->id();
         $isUsed = $this->model->where('user_id', $user)
-        ->where('coupon_id', $id)->count();
+            ->where('coupon_id', $id)->count();
         $isDue = $this->couponRepository->checkCoupon($id);
-        return $isUsed && $isDue;
+        return $isUsed || $isDue;
     }
-    public function checkChairPass($request) {
+    public function checkChairPass($request)
+    {
         $orderDetailWithTime = $this->model->where('time_id', $request->get('time_id'))
-        ->with('orderDetails', 'timeMovie:id,room_id', 'timeMovie.room:id,chair_number')->get();
-        foreach($orderDetailWithTime as $orderDetail) {
-            if(count($orderDetail->orderDetails)) {
+            ->with('orderDetails', 'timeMovie:id,room_id', 'timeMovie.room:id,chair_number')->get();
+        foreach ($orderDetailWithTime as $orderDetail) {
+            if (count($orderDetail->orderDetails)) {
                 $check = $orderDetail->orderDetails->whereIn('no_chair', $request->get('no_chair'))->count();
                 $numberChair = $orderDetail->timeMovie->room->chair_number;
-                $numberInvalid = array_filter($request->get('no_chair'), function($val) use ($numberChair) {
+                $numberInvalid = array_filter($request->get('no_chair'), function ($val) use ($numberChair) {
                     return $val > $numberChair;
                 });
-                if($check || count($numberInvalid)){
+                if ($check || count($numberInvalid)) {
                     return false;
                 }
             }

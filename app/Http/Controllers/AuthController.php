@@ -17,12 +17,14 @@ use Laravel\Passport\Client as OauthClient;
 use Throwable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
-    public function login(AuthRequest $request) {
+    public function login(AuthRequest $request)
+    {
         $user = User::where('email', $request->get('email'))->get();
-        if (!$user || !Auth::attempt($request->only(['email','password']))) {
+        if (!$user || !Auth::attempt($request->only(['email', 'password']))) {
             return response()->json([
                 'message' => 'Email or password not allowed',
             ], JsonResponse::HTTP_UNAUTHORIZED);
@@ -30,7 +32,8 @@ class AuthController extends Controller
         return $this->getTokenAndRefreshToken($request);
     }
 
-    public function me() {
+    public function me()
+    {
         try {
             return $this->responseData(ResourcesUser::make(Auth::user()));
         } catch (\Exception $e) {
@@ -58,7 +61,6 @@ class AuthController extends Controller
             $user->assignRole(config('permission.roles.user'));
             DB::commit();
             return $this->getTokenAndRefreshToken($request);
-
         } catch (Throwable $e) {
             DB::rollBack();
             Log::channel('daily')->error($e->getMessage());
@@ -73,7 +75,7 @@ class AuthController extends Controller
         $oauthClient = OauthClient::where('password_client', 1)->first();
         $http = new Client();
         $response = $http->request('POST', 'http://127.0.0.1:8000/oauth/token', [
-        // $response = $http->request('POST', route('passport.token'), [
+            // $response = $http->request('POST', route('passport.token'), [
             'form_params' => [
                 'grant_type' => 'password',
                 'client_id' => $oauthClient->id,

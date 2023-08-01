@@ -41,10 +41,17 @@ class CouponRepository
         $coupon->delete();
     }
 
-    public function checkCoupon($id) {
+    public function checkCoupon($id)
+    {
         $now = Carbon::now();
         return $this->model->where('id', $id)
-            ->where('time_start', '<=', $now)
-            ->where('time_end', '>', $now)->count();
-    }      
+            ->where('time_start', '>=', $now)
+            ->where('time_end', '<', $now)->count();
+    }
+    public function apply($request)
+    {
+        $code = $request->get('code');
+        $coupon = $this->model->query()->where('code', $code)->first();
+        return $coupon;
+    }
 }

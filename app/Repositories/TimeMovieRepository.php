@@ -2,9 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Models\OrderMovie;
 use App\Models\TimeMovie;
 use Carbon\Carbon;
-use SebastianBergmann\Type\FalseType;
 
 class TimeMovieRepository
 {
@@ -14,9 +14,13 @@ class TimeMovieRepository
     {
         $this->model = $model;
     }
-    public function getById($id, $relation = [])
+    public function getById($id, $relation = [], $condition = [])
     {
-        return $this->model->with($relation)->find($id);
+        return $this->model->with($relation)
+            ->when(count($condition), function ($q) use ($condition) {
+                return $q->where($condition);
+            })
+            ->find($id);
     }
 
     public function getTimeMovieByMonth($request)
@@ -27,27 +31,29 @@ class TimeMovieRepository
             ->when($roomId, function ($q) use ($roomId) {
                 return  $q->whereIn('room_id', $roomId);
             })
-            ->whereYear('time_start',$date)
-            ->whereMonth('time_start',$date)
+            ->whereYear('time_start', $date)
+            ->whereMonth('time_start', $date)
             ->with('movie:id,name,time')
             ->get();
     }
 
-    public  function getTimeByRoom($roomIds, $idTime = null) {
-        if($idTime) {
+    public  function getTimeByRoom($roomIds, $idTime = null)
+    {
+        if ($idTime) {
             $roomIds = array($roomIds);
         }
         return $this->model->whereIn('room_id', $roomIds)
-                ->when($idTime, function ($q) use($idTime) {
-                    return $q->where('id', '<>', $idTime);
-                })->get();
+            ->when($idTime, function ($q) use ($idTime) {
+                return $q->where('id', '<>', $idTime);
+            })->where('status', TimeMovie::STATUS_OPEN)
+            ->get();
     }
 
     public function create(array $data)
     {
         $dataInsert = [];
         $now = Carbon::now();
-        foreach($data['room_id'] as $room_id) {
+        foreach ($data['room_id'] as $room_id) {
             array_push($dataInsert, [
                 'room_id' => $room_id,
                 'movie_id' => $data['movie_id'],
@@ -74,22 +80,24 @@ class TimeMovieRepository
         $timeMovie = $this->model->findOrFail($id);
         $timeMovie->delete();
     }
-    public function checkTimeBeforeInsert($timeRoom, $data, $movie){
-        if(!is_array($data['room_id'])) {
+    public function checkTimeBeforeInsert($timeRoom, $data, $movie)
+    {
+        if (!is_array($data['room_id'])) {
             $data['room_id'] = array($data['room_id']);
         }
-        foreach($data['room_id'] as $roomId) {
+        foreach ($data['room_id'] as $roomId) {
             $time = $timeRoom->where('room_id', $roomId)
-                ->where('time_start','<',Carbon::parse($data['time_start'])->addMinutes($movie->time))
+                ->where('time_start', '<', Carbon::parse($data['time_start'])->addMinutes($movie->time))
                 ->where('time_start', '>', Carbon::parse($data['time_start'])->subMinutes($movie->time));
-            if(count($time)) {
-                return false;             
-            } 
+            if (count($time)) {
+                return false;
+            }
         }
         return true;
     }
 
-    public function getTimeByDay($request) {
+    public function getTimeByDay($request)
+    {
         $date = $request->get('date');
         $roomId = $request->get('room_id');
         return $this->model
@@ -101,5 +109,17 @@ class TimeMovieRepository
             })
             ->with('movie:id,name,time')
             ->get();
+    }
+    public function getAllOrderByTimeId($id)
+    {
+        return $this->model
+            ->join('rooms', 'rooms.id', '=', 'time_movies.room_id')
+            ->where('time_movies.id', $id)
+            ->select('time_movies.*', 'rooms.chair_number')
+            ->with('orders', function($q) {
+                return $q->whereIn('status', [OrderMovie::STATUS_UNUSED, OrderMovie::STATUS_USED]);
+            })
+            ->with('orders.orderDetails')
+            ->first();
     }
 }

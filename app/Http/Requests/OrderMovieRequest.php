@@ -26,11 +26,10 @@ class OrderMovieRequest extends BaseApiRequest
     public function rules()
     {
         return [
-            'user_id' => 'required|exists:users,id',
             'coupon_id' => 'nullable|exists:coupons,id',
             'time_id' => 'required|exists:time_movies,id',
             'status' => [
-                'required',
+                'nullable',
                 Rule::in(OrderMovie::STATUS)
             ],
             'no_chair' => 'required|array',
@@ -38,13 +37,13 @@ class OrderMovieRequest extends BaseApiRequest
         ];
     }
 
-    public function attributes() {
+    public function attributes()
+    {
         return [
-            'user_id' => 'user',
             'coupon_id' => 'coupon',
             'time_id' => 'time',
             'no_chair' => 'no chair',
-            'no_chair.*' =>'no chair',
+            'no_chair.*' => 'no chair',
         ];
     }
 }
